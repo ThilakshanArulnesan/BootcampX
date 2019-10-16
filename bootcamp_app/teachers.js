@@ -10,6 +10,8 @@ const pool = new Pool({
 const args= process.argv.splice(2);
 const coh = args[0] || 'FEB12';
 
+let vals  = [coh];
+
 console.log("connected");
 
 pool.query(`
@@ -18,10 +20,9 @@ FROM assistance_requests
 JOIN teachers on (teachers.id = teacher_id)
 JOIN students on (students.id=student_id)
 JOIN cohorts on (cohorts.id = cohort_id)
-WHERE cohorts.name='${coh}'
+WHERE cohorts.name=$1
 ORDER BY teachers.name;
-
-`).then(res=>{
+`,vals).then(res=>{
   res.rows.forEach((obj)=>{
     console.log(`${obj.cohort}: ${obj.teacher}`);
   })
