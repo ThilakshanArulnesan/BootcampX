@@ -7,13 +7,24 @@ const pool = new Pool({
   database: 'bootcampx'
 });
 
+const args= process.argv.splice(2);
+const coh = args[0] || 'FEB';
+const num = args[1] || 2;
+
+
 pool.query(`
-SELECT id, name,cohort_id
+SELECT students.id as id, students.name as name, cohorts.name as cohort
 FROM students
-LIMIT 5;
+JOIN cohorts ON (cohorts.id = students.cohort_id)
+WHERE cohorts.name LIKE '${coh}%'
+LIMIT ${num};
 `).then(res=>{
-  console.log(res.rows);
+  res.rows.forEach((obj)=>{
+
+    console.log(`${obj.name} has an id of ${obj.id} and was in the ${obj.cohort} cohort.`);
+  })
 })
 .catch(err =>{
   console.error('query error', err.stack);
 })
+
